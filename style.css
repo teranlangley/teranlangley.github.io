@@ -4,5 +4,15 @@ textarea#yourcode {
 }
 
 body {
+	text-align: left;
+	background-color: black;
+	color: white;
+}
+
+h1 {
+	text-align: center;
+}
+
+#runbutton {
 	text-align: center;
 }
