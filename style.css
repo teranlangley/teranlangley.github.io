@@ -1,0 +1,8 @@
+textarea#yourcode {
+	visibility: hidden;
+	height: 0;
+}
+
+body {
+	text-align: center;
+}

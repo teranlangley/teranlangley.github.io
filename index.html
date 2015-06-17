@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html> 
+<head>
+ 
+<title>Teran's Python Game</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script> 
+<script src="http://www.skulpt.org/static/skulpt.min.js" type="text/javascript"></script> 
+<script src="http://www.skulpt.org/static/skulpt-stdlib.js" type="text/javascript"></script> 
+ 
+ 
+ 
+</head> 
+ 
+<body> 
+ 
+<script type="text/javascript"> 
+function outf(text) { 
+    var mypre = document.getElementById("output"); 
+    mypre.innerHTML = mypre.innerHTML + text; 
+} 
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+}
+
+function runit() { 
+   var prog = document.getElementById("yourcode").value; 
+   var mypre = document.getElementById("output"); 
+   mypre.innerHTML = ''; 
+   Sk.pre = "output";
+   Sk.configure({output:outf, read:builtinRead}); 
+   (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+   var myPromise = Sk.misceval.asyncToPromise(function() {
+       return Sk.importMainWithBody("<stdin>", false, prog, true);
+   });
+   myPromise.then(function(mod) {
+       console.log('success');
+   },
+       function(err) {
+       console.log(err.toString());
+   });
+} 
+</script> 
+ 
+<h1>Teran's Game!</h1>
+<form> 
+<textarea id="yourcode" cols="40" rows="10">
+ 
+import random
+
+print("Type exit at any time to end the game.")
+
+#Set up player and computer names
+playerName = input("What is your name?:")
+if playerName == "exit":
+    exit()
+computerName = "Computer"
+
+#Introduces threat and gives option to fight or run
+print("Oh no, " + playerName + " you're being attacked by a " + computerName + "!")
+choice = input("Will you defend yourself(1), or make a break for it(2)?")
+if choice == "exit":
+    exit()
+
+#Sets the health of both player and computer at even amounts
+playerHealth = 100
+computerHealth = 100
+
+#Creates the function that will be used to make the player throw a punch attack
+def Punch():
+    '''Lets the player throw a punch.'''
+    global computerHealth
+    accuracy = random.randint(4,10)
+    damage = random.randint(18,25)
+    if accuracy <= 5:
+        print("It's a miss!")
+    elif accuracy >= 6:
+        print("You landed a clean punch! " + str(damage) + " damage done!")
+        computerHealth = computerHealth - damage
+        if computerHealth <= 0:
+            print("Congratulations! You successfully defeated " + computerName + " !")
+        else:
+            print("Your opponent now has " + str(computerHealth) + " health left.")
+
+#Creates the function for the kick attack
+def Kick():
+    '''Reusable function to let the player use a kicking attack.'''
+    global computerHealth
+    accuracy = random.randint(2,10)
+    damage = random.randint(20,45)
+    if accuracy <= 5:
+        print("It's a miss!")
+    elif accuracy >= 6:
+        print("You hit a beautiful kick! " + str(damage) + " damage done!")
+        computerHealth = computerHealth - damage
+        if computerHealth <= 0:
+            print("Congratulations! You successfully defeated " + computerName + " !")
+        else:
+            print("Your opponent now has " + str(computerHealth) + " health left.")
+
+
+#Computer kick attack function
+def computerKick():
+    '''Computer can kick too.'''
+    computerKick = True
+    global playerHealth
+    accuracy = random.randint(2,10)
+    damage = random.randint(25,45)
+    if accuracy <= 5:
+        print("Your opponent attacks with a kick...")
+        print("But you successfully dodge!")
+    elif accuracy >= 6:
+        print("You are hit with a kick! " + str(damage) + " damage done!")
+        playerHealth = playerHealth - damage
+        if playerHealth <= 0:
+            print("Oh no, you have been defeated.")
+        else:
+            print("You now have " + str(playerHealth) + " health left.")
+
+#Computer punch attack function
+def computerPunch():
+    '''Lets the computer throw a punch attack.'''
+    computerPunch = True
+    global playerHealth
+    accuracy = random.randint(4,10)
+    damage = random.randint(20,25)
+    if accuracy <= 5:
+        print("Your opponent swings with a punch...")
+        print("But you dodge it!")
+    elif accuracy >= 6:
+        print("You are hit with a strong punch! " + str(damage) + " damage done!")
+        playerHealth = playerHealth - damage
+        if playerHealth <= 0:
+            print("Oh no, you have been defeated.")
+        else:
+            print("You now have " + str(playerHealth) + " health left.")
+
+#Player healing function
+def Heal():
+    '''A function used to allow the player to heal themselves'''
+    global playerHealth
+    smallAmountHealed = random.randint(5,15)
+    mediumAmountHealed = random.randint(15,25)
+    largeAmountHealed = random.randint(25,35)
+    if playerHealth < 100 and playerHealth > 50:
+        playerHealth = playerHealth + smallAmountHealed
+        print("You heal " + str(smallAmountHealed) + " health back.")
+        print("You now have " + str(playerHealth) + " health remaining.")
+    if playerHealth < 49 and playerHealth > 25:
+        playerHealth = playerHealth + mediumAmountHealed
+        print("You heal " + str(mediumAmountHealed) + " health back.")
+        print("You now have " + str(playerHealth) + " health remaining.")
+    if playerHealth < 24:
+        playerHealth = playerHealth + largeAmountHealed
+        print("You heal " + str(largeAmountHealed) + " health back.")
+        print("You now have " + str(playerHealth) + " health remaining.")
+
+#Computer healing function
+def computerHeal():
+    '''A function used to allow the computer to heal itself'''
+    global computerHealth
+    smallAmountHealed = random.randint(5,15)
+    mediumAmountHealed = random.randint(15,25)
+    largeAmountHealed = random.randint(25,35)
+    if computerHealth < 100 and computerHealth > 50:
+        computerHealth = computerHealth + smallAmountHealed
+        print("Opponent heals " + str(smallAmountHealed) + " health back.")
+        print("Opponent has " + str(computerHealth) + " health remaining.")
+    if computerHealth < 49 and computerHealth > 25:
+        computerHealth = computerHealth + mediumAmountHealed
+        print("Opponent heals " + str(mediumAmountHealed) + " health back.")
+        print("Opponent has " + str(computerHealth) + " health remaining.")
+    if computerHealth < 24:
+        computerHealth = computerHealth + largeAmountHealed
+        print("Opponent heals " + str(mediumAmountHealed) + " health back.")
+        print("Opponent has " + str(computerHealth) + " health remaining.")
+
+
+
+#Allows the player to choose whether to fight or run(not)
+if choice == "1":
+    whoseTurn = random.randint(1,2)
+    if whoseTurn == 1:
+        print("You get the jump on your opponent!")
+    elif whoseTurn == 2:
+        print("Your opponent gets the upper hand!")
+elif choice == "2":
+    print("What fun is that?")
+    whoseTurn = random.randint(1,2)
+    if whoseTurn == 1:
+        print("You get the jump on your opponent!")
+    elif whoseTurn == 2:
+        print("Your opponent gets the upper hand!")
+else:
+    print("Type 1 or 2 please.")
+
+#Creates the turn loop
+gameStillGoing = True
+
+if computerHealth <= 0 or playerHealth <= 0:
+    gameStillGoing = False
+
+#The main code for the actual playing of the game, allows the user to pick a punch, kick or to heal
+while gameStillGoing == True:
+        while whoseTurn == 1:
+                while whoseTurn == 1:
+                    attackType = input("Punch(1), kick(2), or heal(3)?")
+                    if attackType == "1":
+                        Punch()
+                        whoseTurn = 2
+                    elif attackType == "2":
+                        Kick()
+                        whoseTurn = 2
+                    elif attackType == "3":
+                        Heal()
+                        whoseTurn = 2
+                    elif attackType == "exit":
+                        gameStillGoing = False
+                        break
+                    else:
+                        print("Invalid, enter 1, 2 or 3.")
+                whoseTurn = 2
+        #Computer turn of the main game, randomly selects to punch or kick and uses some basic AI on whether or not to heal
+        while whoseTurn == 2:
+                while whoseTurn == 2:
+                    attackType = random.randint(1,2)
+                    if computerHealth < 100:
+                        chanceToHeal = random.randint(1,50)
+                        if chanceToHeal <= 10:
+                            computerHeal()
+                            whoseTurn = 1
+                    if computerHealth < 50:
+                        chanceToHeal = random.randint(1,25)
+                        if chanceToHeal <= 10:
+                            computerHeal()
+                            whoseTurn = 1
+                    if computerHealth < 25:
+                        chanceToHeal = random.randint(1,15)
+                        if chanceToHeal <= 10:
+                            computerHeal()
+                            whoseTurn = 1
+                    if attackType == 1:
+                        computerPunch()
+                        whoseTurn = 1
+                    elif attackType == 2:
+                        computerKick()
+                        whoseTurn = 1
+                whoseTurn = 1
+        #Ends game
+        if attackType == "exit":
+            gameStillGoing = False
+            break
+        if choice == "exit":
+            gameStillGoing = False
+            break
+        if playerHealth <= 0 or computerHealth <= 0:
+            gameStillGoing = False
+            if computerHealth <= 0:
+                print("Congratulations! You defeated your opponent.")
+            if playerHealth <= 0:
+                print("Oh no, you have been defeated.")
+        if gameStillGoing == False:
+            break
+
+</textarea><br /> 
+<button type="button" onclick="runit()">Run</button> 
+</form> 
+<pre id="output" ></pre> 
+<!-- If you want turtle graphics include a canvas -->
+<div id="mycanvas"></div> 
+ 
+</body> 
+ 
+</html> 
